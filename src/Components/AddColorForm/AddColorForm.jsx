@@ -13,6 +13,7 @@ const FormContainer = styled.div`
 `;
 
 const SubmitButton = styled.button`
+  margin: 5px auto;
   padding: 5px 10px;
   border-radius: 4px;
   background-color: #007bff;
