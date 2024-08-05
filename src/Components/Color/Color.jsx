@@ -1,6 +1,20 @@
+import styled from "styled-components";
 import "./Color.css";
 
-export default function Color({ color }) {
+const DeleteButton = styled.button`
+margin: 5px auto;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background-color: #EE4E4E;
+  color: white;
+  font-size: 1em;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #C80036;
+`;
+
+export default function Color({ color, onDelete }) {
   return (
     <div
       className="color-card"
@@ -12,6 +26,7 @@ export default function Color({ color }) {
       <h3 className="color-card-headline">{color.hex}</h3>
       <h4>{color.role}</h4>
       <p>contrast: {color.contrastText}</p>
+      <DeleteButton onClick={() => onDelete(color.id)}>Delete</DeleteButton>
     </div>
   );
 }
