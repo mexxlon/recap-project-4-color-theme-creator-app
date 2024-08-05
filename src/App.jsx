@@ -1,4 +1,5 @@
 import { useState } from "react";
+import styled from "styled-components";
 import { initialColors } from "./lib/colors";
 import Color from "./Components/Color/Color";
 import { ColorForm } from "./Components/AddColorForm/AddColorForm";
