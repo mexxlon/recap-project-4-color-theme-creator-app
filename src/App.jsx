@@ -47,25 +47,43 @@ function App() {
   };
 
   const handleDeleteColor = (id) => {
-    setConfirmDeleteId(id);
+    setDeleteId(id);
   };
 
   const confirmDelete = () => {
-    setColors(colors.filter((color) => color.id !== confirmDeleteId));
-    setConfirmDeleteId(null);
+    setColors(colors.filter((color) => color.id !== deleteId));
+    setDeleteId(null);
   };
 
   const cancelDelete = () => {
-    setConfirmDeleteId(null);
+    setDeleteId(null);
   };
 
   return (
     <>
       <h1>Theme Creator</h1>
       <ColorForm onAddColor={handleAddColor} />
+      {colors.length === 0 && (
+        <NoColorsMessage>
+          No colors in the theme. Please add a new color!
+        </NoColorsMessage>
+      )}
       {colors.map((color) => (
-        <Color key={color.id} color={color} />
+        <Color
+          key={color.id}
+          color={color}
+          onDelete={() => handleDeleteColor(color.id)}
+        />
       ))}
+      {deleteId && (
+        <ConfirmationDialog>
+          <p className="color-card-highlight">
+            Are you sure you want to delete this color?
+          </p>
+          <Button onClick={confirmDelete}>Yes</Button>
+          <Button onClick={cancelDelete}>No</Button>
+        </ConfirmationDialog>
+      )}
     </>
   );
 }
