@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { initialColors } from "./lib/colors";
 import Color from "./Components/Color/Color";
-import { ColorForm } from "./Components/AddColorForm/ColorForm";
+import { ColorForm } from "./Components/AddColorForm/AddColorForm";
 import "./App.css";
 
 function App() {
