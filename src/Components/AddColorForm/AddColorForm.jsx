@@ -16,13 +16,13 @@ const SubmitButton = styled.button`
   margin: 5px auto;
   padding: 5px 10px;
   border-radius: 4px;
-  background-color: #007bff;
+  background-color: #a2ca71;
   color: white;
   font-size: 1em;
   cursor: pointer;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #387f39;
   }
 `;
 
