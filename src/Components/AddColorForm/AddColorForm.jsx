@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { nanoid } from "nanoid";
 import ColorInput from "../ColorInput/ColorInput";
@@ -26,20 +26,38 @@ const SubmitButton = styled.button`
   }
 `;
 
-export const ColorForm = ({ onAddColor }) => {
+export const ColorForm = ({ onAddColor, onEditColor, initialColor }) => {
   const [role, setRole] = useState("");
   const [hex, setHex] = useState("#ffffff");
   const [contrastText, setContrastText] = useState("#000000");
 
+  useEffect(() => {
+    if (initialColor) {
+      setRole(initialColor.role);
+      setHex(initialColor.hex);
+      setContrastText(initialColor.contrastText);
+    } else {
+      setRole("");
+      setHex("#ffffff");
+      setContrastText("#000000");
+    }
+  }, [initialColor]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newColor = {
+    const colorData = {
       role,
       hex,
       contrastText,
-      id: nanoid(),
+      id: initialColor ? initialColor.id : nanoid(),
     };
-    onAddColor(newColor);
+
+    if (initialColor) {
+      onEditColor(colorData);
+    } else {
+      onAddColor(colorData);
+    }
+
     setRole("");
     setHex("#ffffff");
     setContrastText("#000000");
@@ -83,7 +101,9 @@ export const ColorForm = ({ onAddColor }) => {
           />
         </label>
         <br />
-        <SubmitButton type="submit">Add Color</SubmitButton>
+        <SubmitButton type="submit">
+          {initialColor ? "Update Color" : "Add Color"}
+        </SubmitButton>
       </form>
     </FormContainer>
   );

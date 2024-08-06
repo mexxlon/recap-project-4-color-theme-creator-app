@@ -42,9 +42,19 @@ const Button = styled.button`
 function App() {
   const [colors, setColors] = useState(initialColors);
   const [deleteId, setDeleteId] = useState(null);
+  const [editId, setEditId] = useState(null);
 
   const handleAddColor = (newColor) => {
     setColors([newColor, ...colors]);
+  };
+
+  const handleEditColor = (updatedColor) => {
+    setColors(
+      colors.map((color) =>
+        color.id === updatedColor.id ? updatedColor : color
+      )
+    );
+    setEditId(null);
   };
 
   const handleDeleteColor = (id) => {
@@ -60,10 +70,16 @@ function App() {
     setDeleteId(null);
   };
 
+  const colorToEdit = colors.find((color) => color.id === editId);
+
   return (
     <>
       <h1>Theme Creator</h1>
-      <ColorForm onAddColor={handleAddColor} />
+      <ColorForm
+        onAddColor={handleAddColor}
+        onEditColor={handleEditColor}
+        initialColor={colorToEdit}
+      />
       {colors.length === 0 && (
         <NoColorsMessage>
           No colors in the theme. Please add a new color!
@@ -73,14 +89,13 @@ function App() {
         <Color
           key={color.id}
           color={color}
+          onEdit={() => setEditId(color.id)}
           onDelete={() => handleDeleteColor(color.id)}
         />
       ))}
       {deleteId && (
         <ConfirmationDialog>
-          <p className="color-card-highlight">
-            Are you sure you want to delete this color?
-          </p>
+          <p>Are you sure you want to delete this color?</p>
           <Button onClick={confirmDelete}>Yes</Button>
           <Button onClick={cancelDelete}>No</Button>
         </ConfirmationDialog>
