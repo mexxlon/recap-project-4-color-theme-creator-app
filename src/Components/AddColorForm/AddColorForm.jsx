@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { nanoid } from "nanoid";
 import ColorInput from "../ColorInput/ColorInput";
@@ -26,20 +26,57 @@ const SubmitButton = styled.button`
   }
 `;
 
-export const ColorForm = ({ onAddColor }) => {
+const CancelButton = styled.button`
+  margin: 5px auto;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background-color: #ccc;
+  color: black;
+  font-size: 1em;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #999;
+  }
+`;
+
+export const ColorForm = ({
+  onAddColor,
+  onEditColor,
+  initialColor,
+  onCancelEdit,
+}) => {
   const [role, setRole] = useState("");
   const [hex, setHex] = useState("#ffffff");
   const [contrastText, setContrastText] = useState("#000000");
 
+  useEffect(() => {
+    if (initialColor) {
+      setRole(initialColor.role);
+      setHex(initialColor.hex);
+      setContrastText(initialColor.contrastText);
+    } else {
+      setRole("");
+      setHex("#ffffff");
+      setContrastText("#000000");
+    }
+  }, [initialColor]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newColor = {
+    const colorData = {
       role,
       hex,
       contrastText,
-      id: nanoid(),
+      id: initialColor ? initialColor.id : nanoid(),
     };
-    onAddColor(newColor);
+
+    if (initialColor) {
+      onEditColor(colorData);
+    } else {
+      onAddColor(colorData);
+    }
+
     setRole("");
     setHex("#ffffff");
     setContrastText("#000000");
@@ -68,7 +105,6 @@ export const ColorForm = ({ onAddColor }) => {
             id="hex"
             value={hex}
             onChange={(value) => setHex(value)}
-            color={hex}
           />
         </label>
         <br />
@@ -79,11 +115,17 @@ export const ColorForm = ({ onAddColor }) => {
             id="contrastText"
             value={contrastText}
             onChange={(value) => setContrastText(value)}
-            color={contrastText}
           />
         </label>
         <br />
-        <SubmitButton type="submit">Add Color</SubmitButton>
+        <SubmitButton type="submit">
+          {initialColor ? "Update Color" : "Add Color"}
+        </SubmitButton>
+        {initialColor && (
+          <CancelButton type="button" onClick={onCancelEdit}>
+            Cancel
+          </CancelButton>
+        )}
       </form>
     </FormContainer>
   );
