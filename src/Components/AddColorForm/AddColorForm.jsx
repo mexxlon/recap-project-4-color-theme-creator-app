@@ -47,8 +47,8 @@ export const ColorForm = ({
   onCancelEdit,
 }) => {
   const [role, setRole] = useState("");
-  const [hex, setHex] = useState("");
-  const [contrastText, setContrastText] = useState("");
+  const [hex, setHex] = useState("#ffffff");
+  const [contrastText, setContrastText] = useState("#000000");
 
   useEffect(() => {
     if (initialColor) {
@@ -105,7 +105,6 @@ export const ColorForm = ({
             id="hex"
             value={hex}
             onChange={(value) => setHex(value)}
-            color={hex}
           />
         </label>
         <br />
@@ -116,7 +115,6 @@ export const ColorForm = ({
             id="contrastText"
             value={contrastText}
             onChange={(value) => setContrastText(value)}
-            color={contrastText}
           />
         </label>
         <br />
