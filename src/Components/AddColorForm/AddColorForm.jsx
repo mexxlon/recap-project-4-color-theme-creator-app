@@ -47,8 +47,8 @@ export const ColorForm = ({
   onCancelEdit,
 }) => {
   const [role, setRole] = useState("");
-  const [hex, setHex] = useState("#ffffff");
-  const [contrastText, setContrastText] = useState("#000000");
+  const [hex, setHex] = useState("");
+  const [contrastText, setContrastText] = useState("");
 
   useEffect(() => {
     if (initialColor) {
