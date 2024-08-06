@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { initialColors } from "./lib/colors";
 import Color from "./Components/Color/Color";
@@ -40,9 +40,17 @@ const Button = styled.button`
 `;
 
 function App() {
-  const [colors, setColors] = useState(initialColors);
+  const [colors, setColors] = useState(() => {
+    const savedColors = localStorage.getItem("colors");
+    return savedColors ? JSON.parse(savedColors) : initialColors;
+  });
+
   const [deleteId, setDeleteId] = useState(null);
   const [editId, setEditId] = useState(null);
+
+  useEffect(() => {
+    localStorage.setItem("colors", JSON.stringify(colors));
+  }, [colors]);
 
   const handleAddColor = (newColor) => {
     setColors([newColor, ...colors]);
