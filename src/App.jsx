@@ -57,6 +57,10 @@ function App() {
     setEditId(null);
   };
 
+  function handleCancelEdit() {
+    setEditId(null);
+  }
+
   const handleDeleteColor = (id) => {
     setDeleteId(id);
   };
@@ -79,6 +83,7 @@ function App() {
         onAddColor={handleAddColor}
         onEditColor={handleEditColor}
         initialColor={colorToEdit}
+        onCancelEdit={handleCancelEdit}
       />
       {colors.length === 0 && (
         <NoColorsMessage>

@@ -26,7 +26,26 @@ const SubmitButton = styled.button`
   }
 `;
 
-export const ColorForm = ({ onAddColor, onEditColor, initialColor }) => {
+const CancelButton = styled.button`
+  margin: 5px auto;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background-color: #ccc;
+  color: black;
+  font-size: 1em;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #999;
+  }
+`;
+
+export const ColorForm = ({
+  onAddColor,
+  onEditColor,
+  initialColor,
+  onCancelEdit,
+}) => {
   const [role, setRole] = useState("");
   const [hex, setHex] = useState("#ffffff");
   const [contrastText, setContrastText] = useState("#000000");
@@ -104,6 +123,11 @@ export const ColorForm = ({ onAddColor, onEditColor, initialColor }) => {
         <SubmitButton type="submit">
           {initialColor ? "Update Color" : "Add Color"}
         </SubmitButton>
+        {initialColor && (
+          <CancelButton type="button" onClick={onCancelEdit}>
+            Cancel
+          </CancelButton>
+        )}
       </form>
     </FormContainer>
   );
