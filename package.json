@@ -16,7 +16,8 @@
     "nanoid": "^5.0.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "styled-components": "^6.1.12"
+    "styled-components": "^6.1.12",
+    "use-local-storage-state": "^19.3.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
