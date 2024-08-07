@@ -21,11 +21,12 @@ const ContrastChecker = ({ checkHex, checkContrast }) => {
   const [score, setScore] = useState(null);
 
   useEffect(() => {
-    async function postFetch() {
+    const fetchContrastScore = async () => {
       try {
         const response = await fetch(
           "https://www.aremycolorsaccessible.com/api/are-they",
           {
+            mode: "cors",
             method: "POST",
             body: JSON.stringify({ colors: [checkHex, checkContrast] }),
             headers: {
@@ -33,20 +34,28 @@ const ContrastChecker = ({ checkHex, checkContrast }) => {
             },
           }
         );
-        const fetchedScore = await response.json();
 
-        if (fetchedScore && fetchedScore.Overall) {
-          setScore(fetchedScore.Overall);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const json = await response.json();
+
+        if (json && json.overall) {
+          setScore(json.overall);
         } else {
+          console.error("API response does not contain 'overall' field.");
           setScore("Currently unavailable, try later.");
         }
       } catch (error) {
         console.error("Error fetching the contrast score:", error);
         setScore("Currently unavailable, try later.");
       }
-    }
+    };
 
-    postFetch();
+    if (checkHex && checkContrast) {
+      fetchContrastScore();
+    }
   }, [checkHex, checkContrast]);
 
   return (
