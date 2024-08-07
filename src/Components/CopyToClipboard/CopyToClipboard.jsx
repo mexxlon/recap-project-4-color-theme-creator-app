@@ -43,7 +43,7 @@ export default function CopyToClipboard({ text }) {
 
   useEffect(() => {
     if (copied) {
-      const timer = setTimeout(() => setCopied(false), 3000);
+      const timer = setTimeout(() => setCopied(false), 2000);
       return () => clearTimeout(timer);
     }
   }, [copied]);
