@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import CopyToClipboard from "../CopyToClipboard/CopyToClipboard";
 
 const EditButton = styled.button`
   margin: 5px auto;
@@ -43,6 +44,7 @@ export default function Color({ color, onDelete, onEdit }) {
       <div>
         <EditButton onClick={() => onEdit(color.id)}>Edit</EditButton>
         <DeleteButton onClick={() => onDelete(color.id)}>Delete</DeleteButton>
+        <CopyToClipboard text={color.hex} />
       </div>
     </div>
   );
