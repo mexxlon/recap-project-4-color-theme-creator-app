@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import CopyToClipboard from "../CopyToClipboard/CopyToClipboard";
+import ContrastChecker from "../ContrastChecker/ContrastChecker";
 
 const EditButton = styled.button`
   margin: 5px auto;
@@ -32,15 +33,18 @@ const DeleteButton = styled.button`
 export default function Color({ color, onDelete, onEdit }) {
   return (
     <div
-      className="color-card"
       style={{
         background: color.hex,
         color: color.contrastText,
       }}
     >
-      <h3 className="color-card-headline">{color.hex}</h3>
+      <h3>{color.hex}</h3>
       <h4>{color.role}</h4>
       <p>Contrast: {color.contrastText}</p>
+      <ContrastChecker
+        checkHex={color.hex}
+        checkContrast={color.contrastText}
+      />
       <div>
         <EditButton onClick={() => onEdit(color.id)}>Edit</EditButton>
         <DeleteButton onClick={() => onDelete(color.id)}>Delete</DeleteButton>
