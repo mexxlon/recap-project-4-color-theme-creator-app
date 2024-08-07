@@ -41,7 +41,10 @@ export default function Color({ color, onDelete, onEdit }) {
       <h3>{color.hex}</h3>
       <h4>{color.role}</h4>
       <p>Contrast: {color.contrastText}</p>
-      <ContrastChecker hex={color.hex} contrastText={color.contrastText} />
+      <ContrastChecker
+        checkHex={color.hex}
+        checkContrast={color.contrastText}
+      />
       <div>
         <EditButton onClick={() => onEdit(color.id)}>Edit</EditButton>
         <DeleteButton onClick={() => onDelete(color.id)}>Delete</DeleteButton>

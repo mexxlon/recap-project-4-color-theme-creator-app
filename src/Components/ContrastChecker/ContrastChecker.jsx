@@ -1,52 +1,59 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const ResultParagraph = styled.p`
-  margin: 5px 0;
-  color: ${(props) => (props.valid ? "green" : "red")};
+  display: inline-block;
+  color: ${(props) => (props.score === "Yup" ? "white" : "black")};
+  font-weight: bold;
+  background: ${(props) =>
+    props.score === "Nope"
+      ? "red"
+      : props.score === "Yup"
+      ? "green"
+      : props.score === "Kinda"
+      ? "orange"
+      : "none"};
+  padding: 5px;
+  border-radius: 4px;
 `;
 
-const ContrastChecker = ({ hex, contrastText }) => {
-  const [results, setResults] = useState(null);
-  const [loading, setLoading] = useState(false);
+const ContrastChecker = ({ checkHex, checkContrast }) => {
+  const [score, setScore] = useState(null);
+
   useEffect(() => {
-    const checkContrastRatio = async () => {
-      if (hex && contrastText) {
-        setLoading(true);
-        try {
-          const response = await fetch(
-            "https://www.aremycolorsaccessible.com/api/are-they",
-            {
-              mode: "cors",
-              method: "POST",
-              body: JSON.stringify({ colors: [hex, contrastText] }),
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          const data = await response.json();
-          setResults(data);
-        } catch (error) {
-          setResults({ Overall: "Fail", Contrast: "Error" });
-        } finally {
-          setLoading(false);
+    async function postFetch() {
+      try {
+        const response = await fetch(
+          "https://www.aremycolorsaccessible.com/api/are-they",
+          {
+            method: "POST",
+            body: JSON.stringify({ colors: [checkHex, checkContrast] }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const fetchedScore = await response.json();
+
+        if (fetchedScore && fetchedScore.Overall) {
+          setScore(fetchedScore.Overall);
+        } else {
+          setScore("Currently unavailable, try later.");
         }
+      } catch (error) {
+        console.error("Error fetching the contrast score:", error);
+        setScore("Currently unavailable, try later.");
       }
-    };
+    }
 
-    checkContrastRatio();
-  }, [hex, contrastText]);
+    postFetch();
+  }, [checkHex, checkContrast]);
 
-  if (results) {
-    return (
-      <ResultParagraph valid={results.Overall === "Yup"}>
-        Overall: {results.Overall}
-      </ResultParagraph>
-    );
-  }
-
-  return null;
+  return (
+    <ResultParagraph score={score}>
+      Overall Contrast Score: {score || "Loading..."}
+    </ResultParagraph>
+  );
 };
 
 export default ContrastChecker;
