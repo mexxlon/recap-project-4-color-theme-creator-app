@@ -29,29 +29,29 @@ const CopyMessage = styled.div`
   text-align: center;
 `;
 
-export const CopyToClipboard = () => {
-  const [copy, setCopy] = useState(false);
+export default function CopyToClipboard({ text }) {
+  const [copied, setCopied] = useState(false);
 
-  async function handleCopy(text) {
+  const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text);
-      setCopy(true);
+      setCopied(true);
     } catch (error) {
       console.error("Failed to copy!", error);
     }
-  }
+  };
 
   useEffect(() => {
-    if (copy) {
-      const timer = setTimeout(() => setCopy(false), 3000);
+    if (copied) {
+      const timer = setTimeout(() => setCopied(false), 3000);
       return () => clearTimeout(timer);
     }
-  }, [copy]);
+  }, [copied]);
 
   return (
     <>
       <CopyButton onClick={handleCopy}>Copy Color</CopyButton>
-      {copy && <CopyMessage>Color copied to clipboard!</CopyMessage>}
+      {copied && <CopyMessage>Color copied to clipboard!</CopyMessage>}
     </>
   );
-};
+}
