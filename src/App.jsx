@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { initialColors } from "./lib/colors";
+import { initialThemes } from "./lib/colors"; // Import the themes
 import Color from "./Components/Color/Color";
 import { ColorForm } from "./Components/AddColorForm/AddColorForm";
+import ThemeForm from "./Components/ThemeForm/ThemeForm"; // Import ThemeForm
 import "./App.css";
 
 const NoColorsMessage = styled.p`
@@ -40,41 +41,90 @@ const Button = styled.button`
 `;
 
 function App() {
+  const [themes, setThemes] = useState(initialThemes);
+  const [selectedThemeId, setSelectedThemeId] = useState(themes[0]?.id || "");
   const [colors, setColors] = useState(() => {
-    const savedColors = localStorage.getItem("colors");
-    return savedColors ? JSON.parse(savedColors) : initialColors;
+    const theme = themes.find((theme) => theme.id === selectedThemeId);
+    return theme ? theme.colors : [];
   });
-
   const [deleteId, setDeleteId] = useState(null);
   const [editId, setEditId] = useState(null);
 
   useEffect(() => {
-    localStorage.setItem("colors", JSON.stringify(colors));
-  }, [colors]);
+    const theme = themes.find((theme) => theme.id === selectedThemeId);
+    if (theme) {
+      setColors(theme.colors);
+    }
+  }, [selectedThemeId, themes]);
+
+  const handleAddTheme = (newTheme) => {
+    setThemes([...themes, newTheme]);
+  };
+
+  const handleEditTheme = (updatedTheme) => {
+    setThemes(
+      themes.map((theme) =>
+        theme.id === updatedTheme.id ? updatedTheme : theme
+      )
+    );
+  };
+
+  const handleDeleteTheme = (id) => {
+    setThemes(themes.filter((theme) => theme.id !== id));
+    if (selectedThemeId === id) {
+      const newTheme = themes.find((theme) => theme.id !== "t1");
+      setSelectedThemeId(newTheme ? newTheme.id : "");
+    }
+  };
+
+  const handleSwitchTheme = (themeId) => {
+    setSelectedThemeId(themeId);
+  };
 
   const handleAddColor = (newColor) => {
     setColors([newColor, ...colors]);
+    setThemes(
+      themes.map((theme) =>
+        theme.id === selectedThemeId
+          ? { ...theme, colors: [newColor, ...colors] }
+          : theme
+      )
+    );
   };
 
   const handleEditColor = (updatedColor) => {
-    setColors(
-      colors.map((color) =>
-        color.id === updatedColor.id ? updatedColor : color
+    const updatedColors = colors.map((color) =>
+      color.id === updatedColor.id ? updatedColor : color
+    );
+    setColors(updatedColors);
+    setThemes(
+      themes.map((theme) =>
+        theme.id === selectedThemeId
+          ? { ...theme, colors: updatedColors }
+          : theme
       )
     );
     setEditId(null);
   };
 
-  function handleCancelEdit() {
+  const handleCancelEdit = () => {
     setEditId(null);
-  }
+  };
 
   const handleDeleteColor = (id) => {
     setDeleteId(id);
   };
 
   const confirmDelete = () => {
-    setColors(colors.filter((color) => color.id !== deleteId));
+    const updatedColors = colors.filter((color) => color.id !== deleteId);
+    setColors(updatedColors);
+    setThemes(
+      themes.map((theme) =>
+        theme.id === selectedThemeId
+          ? { ...theme, colors: updatedColors }
+          : theme
+      )
+    );
     setDeleteId(null);
   };
 
@@ -87,6 +137,13 @@ function App() {
   return (
     <>
       <h1>Theme Creator</h1>
+      <ThemeForm
+        themes={themes}
+        onAddTheme={handleAddTheme}
+        onEditTheme={handleEditTheme}
+        onDeleteTheme={handleDeleteTheme}
+        onSwitchTheme={handleSwitchTheme}
+      />
       <ColorForm
         onAddColor={handleAddColor}
         onEditColor={handleEditColor}
@@ -94,9 +151,7 @@ function App() {
         onCancelEdit={handleCancelEdit}
       />
       {colors.length === 0 && (
-        <NoColorsMessage>
-          No colors in the theme. Please add a new color!
-        </NoColorsMessage>
+        <NoColorsMessage>No colors available. Add a color!</NoColorsMessage>
       )}
       {colors.map((color) => (
         <Color
