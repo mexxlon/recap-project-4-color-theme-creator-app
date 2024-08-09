@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { initialThemes } from "./lib/colors"; // Import the themes
+import ThemeForm from "./Components/ThemeForm/ThemeForm";
 import Color from "./Components/Color/Color";
 import { ColorForm } from "./Components/AddColorForm/AddColorForm";
-import ThemeForm from "./Components/ThemeForm/ThemeForm"; // Import ThemeForm
+import { initialThemes } from "./lib/colors";
 import "./App.css";
 
 const NoColorsMessage = styled.p`
@@ -41,67 +41,38 @@ const Button = styled.button`
 `;
 
 function App() {
-  const [themes, setThemes] = useState(initialThemes);
+  const [themes, setThemes] = useState(() => {
+    const savedThemes = localStorage.getItem("themes");
+    return savedThemes ? JSON.parse(savedThemes) : initialThemes;
+  });
+
   const [selectedThemeId, setSelectedThemeId] = useState(themes[0]?.id || "");
   const [colors, setColors] = useState(() => {
-    const theme = themes.find((theme) => theme.id === selectedThemeId);
-    return theme ? theme.colors : [];
+    const savedColors = localStorage.getItem("colors");
+    return savedColors
+      ? JSON.parse(savedColors)
+      : themes.find((theme) => theme.id === selectedThemeId)?.colors || [];
   });
+
   const [deleteId, setDeleteId] = useState(null);
   const [editId, setEditId] = useState(null);
 
   useEffect(() => {
-    const theme = themes.find((theme) => theme.id === selectedThemeId);
-    if (theme) {
-      setColors(theme.colors);
-    }
-  }, [selectedThemeId, themes]);
+    localStorage.setItem("themes", JSON.stringify(themes));
+  }, [themes]);
 
-  const handleAddTheme = (newTheme) => {
-    setThemes([...themes, newTheme]);
-  };
-
-  const handleEditTheme = (updatedTheme) => {
-    setThemes(
-      themes.map((theme) =>
-        theme.id === updatedTheme.id ? updatedTheme : theme
-      )
-    );
-  };
-
-  const handleDeleteTheme = (id) => {
-    setThemes(themes.filter((theme) => theme.id !== id));
-    if (selectedThemeId === id) {
-      const newTheme = themes.find((theme) => theme.id !== "t1");
-      setSelectedThemeId(newTheme ? newTheme.id : "");
-    }
-  };
-
-  const handleSwitchTheme = (themeId) => {
-    setSelectedThemeId(themeId);
-  };
+  useEffect(() => {
+    localStorage.setItem("colors", JSON.stringify(colors));
+  }, [colors]);
 
   const handleAddColor = (newColor) => {
-    setColors([newColor, ...colors]);
-    setThemes(
-      themes.map((theme) =>
-        theme.id === selectedThemeId
-          ? { ...theme, colors: [newColor, ...colors] }
-          : theme
-      )
-    );
+    setColors((prevColors) => [newColor, ...prevColors]);
   };
 
   const handleEditColor = (updatedColor) => {
-    const updatedColors = colors.map((color) =>
-      color.id === updatedColor.id ? updatedColor : color
-    );
-    setColors(updatedColors);
-    setThemes(
-      themes.map((theme) =>
-        theme.id === selectedThemeId
-          ? { ...theme, colors: updatedColors }
-          : theme
+    setColors((prevColors) =>
+      prevColors.map((color) =>
+        color.id === updatedColor.id ? updatedColor : color
       )
     );
     setEditId(null);
@@ -116,14 +87,8 @@ function App() {
   };
 
   const confirmDelete = () => {
-    const updatedColors = colors.filter((color) => color.id !== deleteId);
-    setColors(updatedColors);
-    setThemes(
-      themes.map((theme) =>
-        theme.id === selectedThemeId
-          ? { ...theme, colors: updatedColors }
-          : theme
-      )
+    setColors((prevColors) =>
+      prevColors.filter((color) => color.id !== deleteId)
     );
     setDeleteId(null);
   };
@@ -133,6 +98,34 @@ function App() {
   };
 
   const colorToEdit = colors.find((color) => color.id === editId);
+
+  const handleAddTheme = (newTheme) => {
+    setThemes((prevThemes) => [...prevThemes, newTheme]);
+  };
+
+  const handleEditTheme = (updatedTheme) => {
+    setThemes((prevThemes) =>
+      prevThemes.map((theme) =>
+        theme.id === updatedTheme.id ? updatedTheme : theme
+      )
+    );
+  };
+
+  const handleDeleteTheme = (id) => {
+    setThemes((prevThemes) => prevThemes.filter((theme) => theme.id !== id));
+    if (selectedThemeId === id) {
+      // Set to default theme if the current theme is deleted
+      setSelectedThemeId(themes[0].id);
+    }
+  };
+
+  const handleSwitchTheme = (themeId) => {
+    const theme = themes.find((theme) => theme.id === themeId);
+    if (theme) {
+      setSelectedThemeId(themeId);
+      setColors(theme.colors);
+    }
+  };
 
   return (
     <>

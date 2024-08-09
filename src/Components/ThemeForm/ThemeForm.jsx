@@ -3,8 +3,6 @@ import styled from "styled-components";
 import { nanoid } from "nanoid";
 
 const FormContainer = styled.div`
-  display: flex;
-  flex-direction: column;
   margin: 20px auto;
   max-width: 500px;
   padding: 25px;
