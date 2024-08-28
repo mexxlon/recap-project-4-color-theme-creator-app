@@ -48,10 +48,8 @@ function App() {
 
   const [selectedThemeId, setSelectedThemeId] = useState(themes[0]?.id || "");
   const [colors, setColors] = useState(() => {
-    const savedColors = localStorage.getItem("colors");
-    return savedColors
-      ? JSON.parse(savedColors)
-      : themes.find((theme) => theme.id === selectedThemeId)?.colors || [];
+    const initialTheme = themes.find((theme) => theme.id === selectedThemeId);
+    return initialTheme ? initialTheme.colors : [];
   });
 
   const [deleteId, setDeleteId] = useState(null);
@@ -62,19 +60,34 @@ function App() {
   }, [themes]);
 
   useEffect(() => {
-    localStorage.setItem("colors", JSON.stringify(colors));
-  }, [colors]);
+    const currentTheme = themes.find((theme) => theme.id === selectedThemeId);
+    if (currentTheme) {
+      setColors(currentTheme.colors);
+    }
+  }, [selectedThemeId, themes]);
+
+  const updateThemeColors = (updatedColors) => {
+    setThemes((prevThemes) =>
+      prevThemes.map((theme) =>
+        theme.id === selectedThemeId
+          ? { ...theme, colors: updatedColors }
+          : theme
+      )
+    );
+  };
 
   const handleAddColor = (newColor) => {
-    setColors((prevColors) => [newColor, ...prevColors]);
+    const updatedColors = [newColor, ...colors];
+    setColors(updatedColors);
+    updateThemeColors(updatedColors);
   };
 
   const handleEditColor = (updatedColor) => {
-    setColors((prevColors) =>
-      prevColors.map((color) =>
-        color.id === updatedColor.id ? updatedColor : color
-      )
+    const updatedColors = colors.map((color) =>
+      color.id === updatedColor.id ? updatedColor : color
     );
+    setColors(updatedColors);
+    updateThemeColors(updatedColors);
     setEditId(null);
   };
 
@@ -87,9 +100,9 @@ function App() {
   };
 
   const confirmDelete = () => {
-    setColors((prevColors) =>
-      prevColors.filter((color) => color.id !== deleteId)
-    );
+    const updatedColors = colors.filter((color) => color.id !== deleteId);
+    setColors(updatedColors);
+    updateThemeColors(updatedColors);
     setDeleteId(null);
   };
 
@@ -101,6 +114,8 @@ function App() {
 
   const handleAddTheme = (newTheme) => {
     setThemes((prevThemes) => [...prevThemes, newTheme]);
+    setSelectedThemeId(newTheme.id);
+    setColors(newTheme.colors);
   };
 
   const handleEditTheme = (updatedTheme) => {
@@ -114,17 +129,12 @@ function App() {
   const handleDeleteTheme = (id) => {
     setThemes((prevThemes) => prevThemes.filter((theme) => theme.id !== id));
     if (selectedThemeId === id) {
-      // Set to default theme if the current theme is deleted
-      setSelectedThemeId(themes[0].id);
+      setSelectedThemeId(initialThemes[0].id);
     }
   };
 
   const handleSwitchTheme = (themeId) => {
-    const theme = themes.find((theme) => theme.id === themeId);
-    if (theme) {
-      setSelectedThemeId(themeId);
-      setColors(theme.colors);
-    }
+    setSelectedThemeId(themeId);
   };
 
   return (
