@@ -54,6 +54,7 @@ function App() {
 
   const [deleteId, setDeleteId] = useState(null);
   const [editId, setEditId] = useState(null);
+  const [deleteThemeId, setDeleteThemeId] = useState(null);
 
   useEffect(() => {
     localStorage.setItem("themes", JSON.stringify(themes));
@@ -126,11 +127,23 @@ function App() {
     );
   };
 
-  const handleDeleteTheme = (id) => {
-    setThemes((prevThemes) => prevThemes.filter((theme) => theme.id !== id));
-    if (selectedThemeId === id) {
+  const handleDeleteThemeId = (id) => {
+    setDeleteThemeId(id);
+  };
+
+  const confirmDeleteTheme = () => {
+    setThemes((prevThemes) =>
+      prevThemes.filter((theme) => theme.id !== deleteThemeId)
+    );
+    if (selectedThemeId === deleteThemeId) {
       setSelectedThemeId(initialThemes[0].id);
+      setColors(initialThemes[0].colors);
     }
+    setDeleteThemeId(null);
+  };
+
+  const cancelDeleteTheme = () => {
+    setDeleteThemeId(null);
   };
 
   const handleSwitchTheme = (themeId) => {
@@ -144,7 +157,7 @@ function App() {
         themes={themes}
         onAddTheme={handleAddTheme}
         onEditTheme={handleEditTheme}
-        onDeleteTheme={handleDeleteTheme}
+        onDeleteTheme={handleDeleteThemeId}
         onSwitchTheme={handleSwitchTheme}
       />
       <ColorForm
@@ -169,6 +182,13 @@ function App() {
           <p>Are you sure you want to delete this color?</p>
           <Button onClick={confirmDelete}>Yes</Button>
           <Button onClick={cancelDelete}>No</Button>
+        </ConfirmationDialog>
+      )}
+      {deleteThemeId && (
+        <ConfirmationDialog>
+          <p>Are you sure you want to delete this theme?</p>
+          <Button onClick={confirmDeleteTheme}>Yes</Button>
+          <Button onClick={cancelDeleteTheme}>No</Button>
         </ConfirmationDialog>
       )}
     </>
